@@ -69,4 +69,3 @@ class Pagamento(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     pedido = relationship("Pedido", back_populates="pagamentos")
-

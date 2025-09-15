@@ -117,4 +117,3 @@ class Pagamento(PagamentoBase):
     class Config:
         """Configurações do Pydantic para o schema Pagamento."""
         orm_mode = True
-        

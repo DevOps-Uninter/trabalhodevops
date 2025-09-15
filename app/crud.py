@@ -172,7 +172,9 @@ def obter_pagamento(
 
 
 def atualizar_pagamento(
-    db: Session, pagamento_id: int, pagamento: schemas.PagamentoUpdate
+    db: Session,
+    pagamento_id: int,
+    pagamento: schemas.PagamentoUpdate,
 ) -> models.Pagamento | None:
     """
     Atualiza o status de um pagamento existente.
@@ -185,12 +187,18 @@ def atualizar_pagamento(
     Returns:
         Pagamento | None: O pagamento atualizado, ou None se não existir.
     """
-    db_pagamento = db.query(models.Pagamento).filter(models.Pagamento.id == pagamento_id).first()
+    db_pagamento = (
+        db.query(models.Pagamento)
+        .filter(models.Pagamento.id == pagamento_id)
+        .first()
+    )
+
     if db_pagamento:
         for key, value in pagamento.model_dump().items():
             setattr(db_pagamento, key, value)
         db.commit()
         db.refresh(db_pagamento)
+
     return db_pagamento
 
 
@@ -205,10 +213,15 @@ def deletar_pagamento(db: Session, pagamento_id: int) -> bool:
     Returns:
         bool: True se o pagamento foi deletado, False se não encontrado.
     """
-    db_pagamento = db.query(models.Pagamento).filter(models.Pagamento.id == pagamento_id).first()
+    db_pagamento = (
+        db.query(models.Pagamento)
+        .filter(models.Pagamento.id == pagamento_id)
+        .first()
+    )
+
     if db_pagamento:
         db.delete(db_pagamento)
         db.commit()
         return True
-    return False
 
+    return False
