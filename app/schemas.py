@@ -98,6 +98,7 @@ class PagamentoBase(BaseModel):
 
 class PagamentoCreate(PagamentoBase):
     """Schema para criar novos pagamentos."""
+
     pass
 
 
@@ -116,4 +117,5 @@ class Pagamento(PagamentoBase):
 
     class Config:
         """Configurações do Pydantic para o schema Pagamento."""
+
         orm_mode = True
