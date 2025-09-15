@@ -3,7 +3,6 @@
 # External libraries
 from sqlalchemy import Column, Integer, Float, String, ForeignKey, DateTime
 from datetime import datetime
-from app.database import Base
 from sqlalchemy.orm import relationship
 
 # Own libraries
@@ -45,6 +44,7 @@ class Produto(Base):
     preco = Column(Integer, nullable=False)
     categoria = Column(String, index=True, nullable=False)
     qtdEstoque = Column(Integer, nullable=False)
+
 
 # Pagamento
 class Pagamento(Base):

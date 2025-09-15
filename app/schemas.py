@@ -93,11 +93,14 @@ class PagamentoBase(BaseModel):
     valor: float
     forma_pagamento: str
 
+
 class PagamentoCreate(PagamentoBase):
     pass
 
+
 class PagamentoUpdate(BaseModel):
     status: str  # 'pendente', 'pago', 'cancelado'
+
 
 class Pagamento(PagamentoBase):
     id: int

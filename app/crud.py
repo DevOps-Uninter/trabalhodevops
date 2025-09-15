@@ -112,6 +112,7 @@ def deletar_produto(db: Session, produto_id: int) -> bool:
         return True
     return False
 
+
 # Pagamentos
 def criar_pagamento(db: Session, pagamento: schemas.PagamentoCreate) -> models.Pagamento:
     db_pagamento = models.Pagamento(**pagamento.model_dump())
@@ -120,14 +121,24 @@ def criar_pagamento(db: Session, pagamento: schemas.PagamentoCreate) -> models.P
     db.refresh(db_pagamento)
     return db_pagamento
 
+
 def listar_pagamentos(db: Session, skip: int = 0, limit: int = 10) -> list:
     return db.query(models.Pagamento).offset(skip).limit(limit).all()
+
 
 def obter_pagamento(db: Session, pagamento_id: int) -> models.Pagamento | None:
     return db.query(models.Pagamento).filter(models.Pagamento.id == pagamento_id).first()
 
-def atualizar_pagamento(db: Session, pagamento_id: int, pagamento: schemas.PagamentoUpdate) -> models.Pagamento | None:
-    db_pagamento = db.query(models.Pagamento).filter(models.Pagamento.id == pagamento_id).first()
+
+def atualizar_pagamento(
+    db: Session, pagamento_id: int, pagamento: schemas.PagamentoUpdate
+) -> models.Pagamento | None:
+    """Atualiza os dados de um pagamento existente."""
+    db_pagamento = (
+        db.query(models.Pagamento)
+        .filter(models.Pagamento.id == pagamento_id)
+        .first()
+    )
     if db_pagamento:
         for key, value in pagamento.model_dump().items():
             setattr(db_pagamento, key, value)
@@ -135,8 +146,14 @@ def atualizar_pagamento(db: Session, pagamento_id: int, pagamento: schemas.Pagam
         db.refresh(db_pagamento)
     return db_pagamento
 
+
 def deletar_pagamento(db: Session, pagamento_id: int) -> bool:
-    db_pagamento = db.query(models.Pagamento).filter(models.Pagamento.id == pagamento_id).first()
+    """Remove um pagamento do banco de dados."""
+    db_pagamento = (
+        db.query(models.Pagamento)
+        .filter(models.Pagamento.id == pagamento_id)
+        .first()
+    )
     if db_pagamento:
         db.delete(db_pagamento)
         db.commit()
