@@ -19,9 +19,7 @@ def get_db():
 
 @router.post("/", response_model=schemas.Pedido)
 def criar_pedido(
-    cliente_id: int,
-    pedido: schemas.PedidoCreate,
-    db: Session = Depends(get_db)
+    cliente_id: int, pedido: schemas.PedidoCreate, db: Session = Depends(get_db)
 ):
     """
     Cria um novo pedido associado a um cliente.

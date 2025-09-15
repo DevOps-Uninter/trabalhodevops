@@ -17,7 +17,9 @@ def get_db():
         db.close()
 
 
-@router.get("/pedidos-por-cliente", response_model=list[schemas.RelatorioPedidosCliente])
+@router.get(
+    "/pedidos-por-cliente", response_model=list[schemas.RelatorioPedidosCliente]
+)
 def relatorio_pedidos_cliente(db: Session = Depends(get_db)):
     """Retorna relatório com o total de pedidos por cliente."""
     return crud.relatorio_pedidos_por_cliente(db)

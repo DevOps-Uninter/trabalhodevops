@@ -94,7 +94,9 @@ def atualizar_produto(
     db: Session, produto_id: int, produto: schemas.ProdutoBase
 ) -> models.Produto | None:
     """Atualiza os dados de um produto existente."""
-    db_produto = db.query(models.Produto).filter(models.Produto.id == produto_id).first()
+    db_produto = (
+        db.query(models.Produto).filter(models.Produto.id == produto_id).first()
+    )
     if db_produto:
         for key, value in produto.model_dump().items():
             setattr(db_produto, key, value)
@@ -105,7 +107,9 @@ def atualizar_produto(
 
 def deletar_produto(db: Session, produto_id: int) -> bool:
     """Remove um produto do banco de dados."""
-    db_produto = db.query(models.Produto).filter(models.Produto.id == produto_id).first()
+    db_produto = (
+        db.query(models.Produto).filter(models.Produto.id == produto_id).first()
+    )
     if db_produto:
         db.delete(db_produto)
         db.commit()
@@ -114,7 +118,19 @@ def deletar_produto(db: Session, produto_id: int) -> bool:
 
 
 # Pagamentos
-def criar_pagamento(db: Session, pagamento: schemas.PagamentoCreate) -> models.Pagamento:
+def criar_pagamento(
+    db: Session, pagamento: schemas.PagamentoCreate
+) -> models.Pagamento:
+    """
+    Cria um novo pagamento no banco de dados.
+
+    Args:
+        db (Session): Sessão do banco de dados.
+        pagamento (PagamentoCreate): Dados do pagamento a ser criado.
+
+    Returns:
+        Pagamento: O pagamento criado.
+    """
     db_pagamento = models.Pagamento(**pagamento.model_dump())
     db.add(db_pagamento)
     db.commit()
@@ -122,23 +138,54 @@ def criar_pagamento(db: Session, pagamento: schemas.PagamentoCreate) -> models.P
     return db_pagamento
 
 
-def listar_pagamentos(db: Session, skip: int = 0, limit: int = 10) -> list:
+def listar_pagamentos(
+    db: Session, skip: int = 0, limit: int = 10
+) -> list[models.Pagamento]:
+    """
+    Lista os pagamentos existentes com paginação.
+
+    Args:
+        db (Session): Sessão do banco de dados.
+        skip (int): Quantidade de registros a pular.
+        limit (int): Quantidade máxima de registros a retornar.
+
+    Returns:
+        list[Pagamento]: Lista de pagamentos.
+    """
     return db.query(models.Pagamento).offset(skip).limit(limit).all()
 
 
-def obter_pagamento(db: Session, pagamento_id: int) -> models.Pagamento | None:
+def obter_pagamento(
+    db: Session, pagamento_id: int
+) -> models.Pagamento | None:
+    """
+    Obtém um pagamento pelo ID.
+
+    Args:
+        db (Session): Sessão do banco de dados.
+        pagamento_id (int): ID do pagamento.
+
+    Returns:
+        Pagamento | None: O pagamento correspondente, ou None se não existir.
+    """
     return db.query(models.Pagamento).filter(models.Pagamento.id == pagamento_id).first()
 
 
 def atualizar_pagamento(
     db: Session, pagamento_id: int, pagamento: schemas.PagamentoUpdate
 ) -> models.Pagamento | None:
-    """Atualiza os dados de um pagamento existente."""
-    db_pagamento = (
-        db.query(models.Pagamento)
-        .filter(models.Pagamento.id == pagamento_id)
-        .first()
-    )
+    """
+    Atualiza o status de um pagamento existente.
+
+    Args:
+        db (Session): Sessão do banco de dados.
+        pagamento_id (int): ID do pagamento a ser atualizado.
+        pagamento (PagamentoUpdate): Novos dados do pagamento.
+
+    Returns:
+        Pagamento | None: O pagamento atualizado, ou None se não existir.
+    """
+    db_pagamento = db.query(models.Pagamento).filter(models.Pagamento.id == pagamento_id).first()
     if db_pagamento:
         for key, value in pagamento.model_dump().items():
             setattr(db_pagamento, key, value)
@@ -148,14 +195,20 @@ def atualizar_pagamento(
 
 
 def deletar_pagamento(db: Session, pagamento_id: int) -> bool:
-    """Remove um pagamento do banco de dados."""
-    db_pagamento = (
-        db.query(models.Pagamento)
-        .filter(models.Pagamento.id == pagamento_id)
-        .first()
-    )
+    """
+    Remove um pagamento do banco de dados.
+
+    Args:
+        db (Session): Sessão do banco de dados.
+        pagamento_id (int): ID do pagamento a ser removido.
+
+    Returns:
+        bool: True se o pagamento foi deletado, False se não encontrado.
+    """
+    db_pagamento = db.query(models.Pagamento).filter(models.Pagamento.id == pagamento_id).first()
     if db_pagamento:
         db.delete(db_pagamento)
         db.commit()
         return True
     return False
+

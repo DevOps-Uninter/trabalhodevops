@@ -20,10 +20,7 @@ def get_db():
 
 # cadastrar um produto
 @router.post("/criar", response_model=schemas.Produto)
-def criar_produto(
-    produto: schemas.ProdutoCreate,
-    db: Session = Depends(get_db)
-):
+def criar_produto(produto: schemas.ProdutoCreate, db: Session = Depends(get_db)):
     """
     Cria um novo produto.
 
@@ -76,9 +73,7 @@ def obter_produto(produto_id: int, db: Session = Depends(get_db)):
 #  atualizar um produto
 @router.put("/atualizar/{produto_id}", response_model=schemas.Produto)
 def atualizar_produto(
-    produto_id: int,
-    produto: schemas.ProdutoCreate,
-    db: Session = Depends(get_db)
+    produto_id: int, produto: schemas.ProdutoCreate, db: Session = Depends(get_db)
 ):
     """
     Atualiza um produto existente.
@@ -102,10 +97,7 @@ def atualizar_produto(
 
 #  deletar um produto
 @router.delete("/deletar/{produto_id}", status_code=status.HTTP_200_OK)
-def deletar_produto(
-    produto_id: int,
-    db: Session = Depends(get_db)
-):
+def deletar_produto(produto_id: int, db: Session = Depends(get_db)):
     """
     Deleta um produto pelo ID.
 
@@ -121,6 +113,8 @@ def deletar_produto(
     """
     produto_deletado = crud.deletar_produto(db, produto_id)
     if not produto_deletado:
-        raise HTTPException(status_code=404, detail="Não foi possível deletar o produto")
+        raise HTTPException(
+            status_code=404, detail="Não foi possível deletar o produto"
+        )
 
     return {"message": "Produto deletado com sucesso."}

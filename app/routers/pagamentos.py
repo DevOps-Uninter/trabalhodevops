@@ -69,14 +69,9 @@ def obter_pagamento(pagamento_id: int, db: Session = Depends(get_db)):
     return pagamento
 
 
-@router.put(
-    "/{pagamento_id}",
-    response_model=schemas.Pagamento
-)
+@router.put("/{pagamento_id}", response_model=schemas.Pagamento)
 def atualizar_pagamento(
-    pagamento_id: int,
-    pagamento: schemas.PagamentoUpdate,
-    db: Session = Depends(get_db)
+    pagamento_id: int, pagamento: schemas.PagamentoUpdate, db: Session = Depends(get_db)
 ):
     """Atualiza os dados de um pagamento existente."""
     pagamento_atualizado = crud.atualizar_pagamento(db, pagamento_id, pagamento)

@@ -48,6 +48,17 @@ class Produto(Base):
 
 # Pagamento
 class Pagamento(Base):
+    """
+    Representa um pagamento associado a um pedido.
+
+    Attributes:
+        id (int): Identificador único do pagamento.
+        pedido_id (int): ID do pedido relacionado.
+        valor (float): Valor do pagamento.
+        status (str): Status do pagamento ('pendente', 'pago', 'cancelado').
+        forma_pagamento (str): Forma de pagamento utilizada.
+        created_at (datetime): Data e hora da criação do pagamento.
+    """
     __tablename__ = "pagamentos"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -58,3 +69,4 @@ class Pagamento(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     pedido = relationship("Pedido", back_populates="pagamentos")
+
