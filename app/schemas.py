@@ -67,7 +67,7 @@ class ProdutoBase(BaseModel):
     nome: str
     preco: float
     categoria: str
-    qtdEstoque: int
+    qtd_estoque: int
 
 
 class ProdutoCreate(ProdutoBase):
