@@ -61,6 +61,21 @@ class RelatorioPedidosCliente(BaseModel):
     total_pedidos: int
 
 
+class RelatorioFaturamento(BaseModel):
+    """Schema para relatório de faturamento."""
+
+    total_faturado: float
+    periodo: str
+
+
+class RelatorioProdutoEstoqueBaixo(BaseModel):
+    """Schema para relatório de produtos com estoque baixo."""
+
+    id: int
+    nome: str
+    qtd_estoque: int
+
+
 class ProdutoBase(BaseModel):
     """Schema base para produtos."""
 
@@ -113,7 +128,6 @@ class Entrega(EntregaBase):
         from_attributes = True
 
 
-# Pagamento
 class PagamentoBase(BaseModel):
     """Schema base para pagamentos."""
 
