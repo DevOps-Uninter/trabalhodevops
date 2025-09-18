@@ -113,3 +113,35 @@ Este projeto é um trabalho prático da disciplina de **DevOps** e tem como foco
 - Deploy automatizado em ambiente cloud (AWS)
 - Monitoramento e alertas com AWS CloudWatch
 - Aplicação de boas práticas DevOps de ponta a ponta no ciclo de vida do software
+
+INTEGRANTES DO GRUPO
+
+Weden Gabriel da Silva Gomes
+RU: 4170826
+GIT: wedengabriel
+
+Desyree N Garcia Batista
+RU986134
+GIT:desyreegarcia
+
+Cleberton Gonçalves da Silva
+RU: 4710627
+GIT:
+
+LUCAS SILVA
+RU: 4702132
+GIT:onlyluc
+
+Arissa Andreina Kohata
+RU:4711950
+GIT:arissak
+
+Edi Carlos Celestino Silva
+RU: 4661343
+GIT:ediicarllos
+
+Eliseu de Lima Andrade 
+RU: 4709242
+
+Jamile Santana da Silva
+RU: 4773362 
