@@ -70,7 +70,7 @@ def obter_pedido(pedido_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
     return pedido
 
-# ...código existente...
+
 
 @router.put("/{pedido_id}", response_model=schemas.Pedido)
 def atualizar_pedido(
@@ -93,6 +93,8 @@ def atualizar_pedido(
     if not pedido_atualizado:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
     return pedido_atualizado
+
+
 
 @router.delete("/{pedido_id}", response_model=dict)
 def deletar_pedido(
