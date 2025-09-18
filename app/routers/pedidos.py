@@ -69,3 +69,47 @@ def obter_pedido(pedido_id: int, db: Session = Depends(get_db)):
     if not pedido:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
     return pedido
+
+# ...código existente...
+
+@router.put("/{pedido_id}", response_model=schemas.Pedido)
+def atualizar_pedido(
+    pedido_id: int,
+    pedido: schemas.PedidoUpdate,
+    db: Session = Depends(get_db)
+):
+    """
+    Atualiza um pedido existente.
+
+    Args:
+        pedido_id (int): ID do pedido.
+        pedido (PedidoUpdate): Dados atualizados do pedido.
+        db (Session): Sessão do banco de dados.
+
+    Returns:
+        Pedido atualizado.
+    """
+    pedido_atualizado = crud.atualizar_pedido(db, pedido_id, pedido)
+    if not pedido_atualizado:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    return pedido_atualizado
+
+@router.delete("/{pedido_id}", response_model=dict)
+def deletar_pedido(
+    pedido_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Remove um pedido pelo ID.
+
+    Args:
+        pedido_id (int): ID do pedido.
+        db (Session): Sessão do banco de dados.
+
+    Returns:
+        Mensagem de sucesso.
+    """
+    sucesso = crud.deletar_pedido(db, pedido_id)
+    if not sucesso:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    return {"mensagem": "Pedido removido com sucesso"}

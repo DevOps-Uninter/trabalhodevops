@@ -70,6 +70,29 @@ def relatorio_pedidos_por_cliente(db: Session) -> list[schemas.RelatorioPedidosC
     ]
 
 
+def atualizar_pedido(
+    db: Session, pedido_id: int, pedido: schemas.PedidoUpdate
+) -> models.Pedido | None:
+    """Atualiza os dados de um pedido existente."""
+    db_pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
+    if db_pedido:
+        for key, value in pedido.model_dump().items():
+            setattr(db_pedido, key, value)
+        db.commit()
+        db.refresh(db_pedido)
+    return db_pedido
+
+
+def deletar_pedido(db: Session, pedido_id: int) -> bool:
+    """Remove um pedido do banco de dados."""
+    db_pedido = db.query(models.Pedido).filter(models.Pedido.id == pedido_id).first()
+    if db_pedido:
+        db.delete(db_pedido)
+        db.commit()
+        return True
+    return False
+
+
 # Produtos
 def criar_produto(db: Session, produto: schemas.ProdutoCreate) -> models.Produto:
     """Cria um novo produto no banco de dados."""
