@@ -1,9 +1,9 @@
 """Modelos de dados do sistema EasyOrder."""
 
 # External libraries
-from sqlalchemy import Column, Integer, Float, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, Float, String, ForeignKey, DateTime, Numeric
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 # Own libraries
@@ -32,7 +32,9 @@ class Pedido(Base):
     cliente_id = Column(Integer, ForeignKey("clientes.id"))
 
     cliente = relationship("Cliente", back_populates="pedidos")
-    pagamentos = relationship("Pagamento", back_populates="pedido")
+    pagamentos = relationship(
+        "Pagamento", back_populates="pedido", cascade="all, delete-orphan"
+    )
 
 
 class Produto(Base):
@@ -42,9 +44,9 @@ class Produto(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, index=True, nullable=False)
-    preco = Column(Integer, nullable=False)
+    preco = Column(Numeric(10, 2), nullable=False)
     categoria = Column(String, index=True, nullable=False)
-    qtdEstoque = Column(Integer, nullable=False)
+    qtd_estoque = Column(Integer, nullable=False)
 
 
 class Entrega(Base):
@@ -55,7 +57,10 @@ class Entrega(Base):
     id = Column(Integer, primary_key=True, index=True)
     endereco = Column(String, index=True, nullable=False)
     status = Column(String, index=True, nullable=False)
-    data_entrega = Column(DateTime, nullable=False, default=datetime.now)
+    data_entrega = Column(
+        DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc))
     pedido_id = Column(Integer, ForeignKey("pedidos.id"), nullable=False)
 
 
@@ -70,6 +75,6 @@ class Pagamento(Base):
     valor = Column(Float, nullable=False)
     status = Column(String, default="pendente")  # 'pendente', 'pago', 'cancelado'
     forma_pagamento = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     pedido = relationship("Pedido", back_populates="pagamentos")
