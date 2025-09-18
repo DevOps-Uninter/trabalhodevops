@@ -117,6 +117,32 @@ def deletar_produto(db: Session, produto_id: int) -> bool:
     return False
 
 
+# Entregas
+def criar_entrega(db: Session, entrega: schemas.EntregaCreate) -> models.Entrega:
+    """Cria uma nova entrga no banco de dados."""
+    db_entrega = models.Entrega(**entrega.model_dump())
+    db.add(db_entrega)
+    db.commit()
+    db.refresh(db_entrega)
+    return db_entrega
+
+
+# listar_entregas
+def listar_entregas(db: Session, skip: int = 0, limit: int = 10) -> list:
+    """Lista todas as entregas com paginação."""
+    return db.query(models.Entrega).offset(skip).limit(limit).all()
+
+
+# obter_entrega
+def obter_entrega(db: Session, entrega_id: int) -> models.Entrega | None:
+    """Obtém uma entrega pelo ID."""
+    return db.query(models.Entrega).filter(models.Entrega.id == entrega_id).first()
+
+# atualizar_entrega
+
+# deletar_entrega
+
+
 # Pagamentos
 def criar_pagamento(
     db: Session, pagamento: schemas.PagamentoCreate

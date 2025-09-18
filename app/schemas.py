@@ -87,6 +87,32 @@ class Produto(ProdutoBase):
         orm_mode = True
 
 
+class EntregaBase(BaseModel):
+    """Schema base para entregas."""
+
+    endereco: str
+    status: str
+    data_entrega: datetime
+
+
+class EntregaCreate(EntregaBase):
+    """Schema de criação de entregas."""
+
+    pedido_id: int
+
+
+class Entrega(EntregaBase):
+    """Schema de leitura de entregas."""
+
+    id: int
+    pedido_id: int
+
+    class Config:
+        """Configurações do Pydantic."""
+
+        orm_mode = True
+
+
 # Pagamento
 class PagamentoBase(BaseModel):
     """Schema base para pagamentos."""
