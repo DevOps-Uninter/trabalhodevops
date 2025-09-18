@@ -1,7 +1,7 @@
 """Modelos de dados do sistema EasyOrder."""
 
 # External libraries
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, Float, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -32,6 +32,7 @@ class Pedido(Base):
     cliente_id = Column(Integer, ForeignKey("clientes.id"))
 
     cliente = relationship("Cliente", back_populates="pedidos")
+    pagamentos = relationship("Pagamento", back_populates="pedido")
 
 
 class Produto(Base):
@@ -56,3 +57,19 @@ class Entrega(Base):
     status = Column(String, index=True, nullable=False)
     data_entrega = Column(DateTime, nullable=False, default=datetime.now)
     pedido_id = Column(Integer, ForeignKey("pedidos.id"), nullable=False)
+
+
+# Pagamento
+class Pagamento(Base):
+    """Representa um pagamento associado a um pedido."""
+
+    __tablename__ = "pagamentos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    pedido_id = Column(Integer, ForeignKey("pedidos.id"))
+    valor = Column(Float, nullable=False)
+    status = Column(String, default="pendente")  # 'pendente', 'pago', 'cancelado'
+    forma_pagamento = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    pedido = relationship("Pedido", back_populates="pagamentos")
