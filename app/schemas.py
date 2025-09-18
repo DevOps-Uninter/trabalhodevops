@@ -25,7 +25,7 @@ class Pedido(PedidoBase):
     class Config:
         """Configurações do Pydantic."""
 
-        orm_mode = True
+        from_attributes = True
 
 
 class ClienteBase(BaseModel):
@@ -50,7 +50,7 @@ class Cliente(ClienteBase):
     class Config:
         """Configurações do Pydantic."""
 
-        orm_mode = True
+        from_attributes = True
 
 
 class RelatorioPedidosCliente(BaseModel):
@@ -84,7 +84,7 @@ class Produto(ProdutoBase):
     class Config:
         """Configurações do Pydantic."""
 
-        orm_mode = True
+        from_attributes = True
 
 
 class EntregaBase(BaseModel):
@@ -110,7 +110,7 @@ class Entrega(EntregaBase):
     class Config:
         """Configurações do Pydantic."""
 
-        orm_mode = True
+        from_attributes = True
 
 
 # Pagamento
@@ -144,4 +144,4 @@ class Pagamento(PagamentoBase):
     class Config:
         """Configurações do Pydantic para o schema Pagamento."""
 
-        orm_mode = True
+        from_attributes = True
