@@ -15,10 +15,13 @@ class PedidoCreate(PedidoBase):
 
     pass
 
+
 class PedidoUpdate(BaseModel):
     """Schema para atualização de pedidos."""
+
     descricao: str
-    
+
+
 class Pedido(PedidoBase):
     """Schema de leitura de pedidos."""
 
