@@ -110,6 +110,7 @@ class Produto(ProdutoBase):
 
 class EntregaBase(BaseModel):
     """Schema base para entregas."""
+
     endereco: str
     status: str
     data_entrega: datetime
@@ -117,11 +118,13 @@ class EntregaBase(BaseModel):
 
 class EntregaCreate(EntregaBase):
     """Schema de criação de entregas."""
+
     pedido_id: int
 
 
 class EntregaUpdate(BaseModel):
     """Schema de atualização de entregas."""
+
     endereco: str | None = None
     status: str | None = None
     data_entrega: datetime | None = None
@@ -130,10 +133,13 @@ class EntregaUpdate(BaseModel):
 
 class Entrega(EntregaBase):
     """Schema de leitura de entregas."""
+
     id: int
     pedido_id: int
 
     class Config:
+        """Configurações do Pydantic."""
+
         from_attributes = True
 
 
