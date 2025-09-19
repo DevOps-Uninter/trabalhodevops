@@ -115,7 +115,9 @@ def deletar_produto(produto_id: int):
     try:
         produto_deletado = crud.deletar_produto(db, produto_id)
         if not produto_deletado:
-            raise HTTPException(status_code=404, detail="Não foi possível deletar o produto")
+            raise HTTPException(
+                status_code=404, detail="Não foi possível deletar o produto"
+            )
         return {"message": "Produto deletado com sucesso."}
     finally:
         db.close()
