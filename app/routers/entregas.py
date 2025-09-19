@@ -10,6 +10,7 @@ router = APIRouter(prefix="/entregas", tags=["Entregas"])
 @router.post("/criar", response_model=schemas.Entrega)
 def criar_entrega(entrega: schemas.EntregaCreate, db: Session = Depends(database.get_db)):
     """Cria uma nova entrega."""
+
     return crud.criar_entrega(db, entrega)
 
 
@@ -20,12 +21,14 @@ def listar_entregas(
     db: Session = Depends(database.get_db),
 ):
     """Lista todas as entregas cadastradas."""
+
     return crud.listar_entregas(db, skip=skip, limit=limit)
 
 
 @router.get("/{entrega_id}", response_model=schemas.Entrega)
 def obter_entrega(entrega_id: int, db: Session = Depends(database.get_db)):
     """Obtém uma entrega pelo ID."""
+
     db_entrega = crud.obter_entrega(db, entrega_id)
     if db_entrega is None:
         raise HTTPException(status_code=404, detail="Entrega não encontrada")
@@ -40,6 +43,7 @@ def atualizar_entrega(
     db: Session = Depends(database.get_db)
 ):
     """Atualiza uma entrega pelo ID."""
+
     db_entrega = crud.obter_entrega(db, entrega_id)
     if db_entrega is None:
         raise HTTPException(status_code=404, detail="Entrega não encontrada")
@@ -50,6 +54,7 @@ def atualizar_entrega(
 @router.delete("/{entrega_id}")
 def deletar_entrega(entrega_id: int, db: Session = Depends(database.get_db)):
     """Deleta uma entrega pelo ID."""
+
     db_entrega = crud.obter_entrega(db, entrega_id)
     if db_entrega is None:
         raise HTTPException(status_code=404, detail="Entrega não encontrada")
