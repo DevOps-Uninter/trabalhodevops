@@ -28,7 +28,10 @@ def criar_pedido(
 
 
 @router.get("/", response_model=list[schemas.Pedido])
-def listar_pedidos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def listar_pedidos(skip: int = 0,
+                limit: int = 10,
+                db: Session = Depends(database.get_db)
+):
     """
     Lista os pedidos cadastrados.
 
