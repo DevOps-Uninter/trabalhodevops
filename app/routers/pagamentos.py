@@ -10,9 +10,7 @@ router = APIRouter(prefix="/pagamentos", tags=["Pagamentos"])
 
 @router.post("/", response_model=schemas.Pagamento, status_code=status.HTTP_201_CREATED)
 def criar_pagamento(pagamento: schemas.PagamentoCreate):
-    """
-    Cria um novo pagamento associado a um pedido.
-    """
+    """Cria um novo pagamento associado a um pedido."""
     db: Session = SessionLocal()
     try:
         return crud.criar_pagamento(db, pagamento)
@@ -22,9 +20,7 @@ def criar_pagamento(pagamento: schemas.PagamentoCreate):
 
 @router.get("/", response_model=list[schemas.Pagamento])
 def listar_pagamentos(skip: int = 0, limit: int = 10):
-    """
-    Lista todos os pagamentos cadastrados com paginação.
-    """
+    """Lista todos os pagamentos cadastrados com paginação."""
     db: Session = SessionLocal()
     try:
         return crud.listar_pagamentos(db, skip=skip, limit=limit)
@@ -34,9 +30,7 @@ def listar_pagamentos(skip: int = 0, limit: int = 10):
 
 @router.get("/{pagamento_id}", response_model=schemas.Pagamento)
 def obter_pagamento(pagamento_id: int):
-    """
-    Obtém um pagamento pelo ID.
-    """
+    """Obtém um pagamento pelo ID."""
     db: Session = SessionLocal()
     try:
         pagamento = crud.obter_pagamento(db, pagamento_id)
@@ -62,9 +56,7 @@ def atualizar_pagamento(pagamento_id: int, pagamento: schemas.PagamentoUpdate):
 
 @router.delete("/{pagamento_id}", status_code=status.HTTP_204_NO_CONTENT)
 def deletar_pagamento(pagamento_id: int):
-    """
-    Deleta um pagamento pelo ID.
-    """
+    """Deleta um pagamento pelo ID."""
     db: Session = SessionLocal()
     try:
         sucesso = crud.deletar_pagamento(db, pagamento_id)
