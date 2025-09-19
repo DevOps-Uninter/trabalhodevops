@@ -100,18 +100,21 @@ def atualizar_produto(
     return produto_atualizado
 
 
-#  deletar um produto
+# deletar um produto
+from fastapi import APIRouter, HTTPException, status
+from sqlalchemy.orm import Session
+from app.database import SessionLocal
+from app import crud
+
+router = APIRouter()
+
 @router.delete("/deletar/{produto_id}", status_code=status.HTTP_200_OK)
-def deletar_produto(
-    produto_id: int,
-    db: Session = Depends(get_db)
-):
+def deletar_produto(produto_id: int):
     """
     Deleta um produto pelo ID.
 
     Args:
         produto_id (int): O ID do produto a ser deletado.
-        db (Session): A sessão do banco de dados.
 
     Returns:
         Uma mensagem de sucesso.
@@ -119,8 +122,14 @@ def deletar_produto(
     Raises:
         HTTPException: 404 Not Found se o produto não for encontrado.
     """
-    produto_deletado = crud.deletar_produto(db, produto_id)
-    if not produto_deletado:
-        raise HTTPException(status_code=404, detail="Não foi possível deletar o produto")
-
-    return {"message": "Produto deletado com sucesso."}
+    db = SessionLocal()
+    try:
+        produto_deletado = crud.deletar_produto(db, produto_id)
+        if not produto_deletado:
+            raise HTTPException(
+                status_code=404,
+                detail="Não foi possível deletar o produto"
+            )
+        return {"message": "Produto deletado com sucesso."}
+    finally:
+        db.close()
