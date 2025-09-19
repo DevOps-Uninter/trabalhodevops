@@ -142,7 +142,7 @@ def deletar_produto(db: Session, produto_id: int) -> bool:
 
 # Entregas
 def criar_entrega(db: Session, entrega: schemas.EntregaCreate) -> models.Entrega:
-    """Cria uma nova entrga no banco de dados."""
+    """Cria uma nova entrega no banco de dados."""
     db_entrega = models.Entrega(**entrega.model_dump())
     db.add(db_entrega)
     db.commit()
@@ -150,20 +150,41 @@ def criar_entrega(db: Session, entrega: schemas.EntregaCreate) -> models.Entrega
     return db_entrega
 
 
-# listar_entregas
-def listar_entregas(db: Session, skip: int = 0, limit: int = 10) -> list:
+def listar_entregas(db: Session, skip: int = 0, limit: int = 10) -> list[models.Entrega]:
     """Lista todas as entregas com paginação."""
     return db.query(models.Entrega).offset(skip).limit(limit).all()
 
 
-# obter_entrega
 def obter_entrega(db: Session, entrega_id: int) -> models.Entrega | None:
     """Obtém uma entrega pelo ID."""
     return db.query(models.Entrega).filter(models.Entrega.id == entrega_id).first()
 
-# atualizar_entrega
 
-# deletar_entrega
+def atualizar_entrega(
+        db: Session, entrega_id: int, entrega: schemas.EntregaUpdate
+        ) -> models.Entrega | None:
+    """Atualiza os dados de uma entrega existente."""
+    db_entrega = db.query(models.Entrega).filter(models.Entrega.id == entrega_id).first()
+    if not db_entrega:
+        return None
+
+    for key, value in entrega.model_dump(exclude_unset=True).items():
+        setattr(db_entrega, key, value)
+
+    db.commit()
+    db.refresh(db_entrega)
+    return db_entrega
+
+
+def deletar_entrega(db: Session, entrega_id: int) -> bool:
+    """Remove uma entrega do banco de dados."""
+    db_entrega = db.query(models.Entrega).filter(models.Entrega.id == entrega_id).first()
+    if not db_entrega:
+        return False
+
+    db.delete(db_entrega)
+    db.commit()
+    return True
 
 
 # Pagamentos
