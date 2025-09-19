@@ -2,26 +2,16 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app import crud, schemas
-from app.database import SessionLocal
+from app import crud, schemas, database
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
-
-
-def get_db():
-    """Cria e fecha a sessão com o banco de dados."""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.post("/", response_model=schemas.Pedido)
 def criar_pedido(
     cliente_id: int,
     pedido: schemas.PedidoCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(database.get_db)
 ):
     """
     Cria um novo pedido associado a um cliente.
@@ -38,7 +28,9 @@ def criar_pedido(
 
 
 @router.get("/", response_model=list[schemas.Pedido])
-def listar_pedidos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def listar_pedidos(skip: int = 0
+                , limit: int = 10,
+                db: Session = Depends(database.get_db)):
     """
     Lista os pedidos cadastrados.
 
@@ -54,7 +46,7 @@ def listar_pedidos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
 
 
 @router.get("/{pedido_id}", response_model=schemas.Pedido)
-def obter_pedido(pedido_id: int, db: Session = Depends(get_db)):
+def obter_pedido(pedido_id: int, db: Session = Depends(database.get_db)):
     """
     Obtém um pedido pelo ID.
 
@@ -75,7 +67,7 @@ def obter_pedido(pedido_id: int, db: Session = Depends(get_db)):
 def atualizar_pedido(
     pedido_id: int,
     pedido: schemas.PedidoUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(database.get_db)
 ):
     """
     Atualiza um pedido existente.
@@ -97,7 +89,7 @@ def atualizar_pedido(
 @router.delete("/{pedido_id}", response_model=dict)
 def deletar_pedido(
     pedido_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(database.get_db)
 ):
     """
     Remove um pedido pelo ID.
