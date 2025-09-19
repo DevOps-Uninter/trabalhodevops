@@ -122,6 +122,15 @@ class EntregaCreate(EntregaBase):
     pedido_id: int
 
 
+class EntregaUpdate(BaseModel):
+    """Schema de atualização de entregas."""
+
+    endereco: str | None = None
+    status: str | None = None
+    data_entrega: datetime | None = None
+    pedido_id: int | None = None
+
+
 class Entrega(EntregaBase):
     """Schema de leitura de entregas."""
 
