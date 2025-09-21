@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  easyorder:
+    build: .
+    container_name: easyorder
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:///./data/easyorder.db
+    entrypoint: ./entrypoint.sh

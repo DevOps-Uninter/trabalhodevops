@@ -13,8 +13,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia o restante da aplicação
 COPY . .
 
+# Dá permissão de execução ao entrypoint
+RUN chmod +x /app/entrypoint.sh
+
 # Expõe a porta da API (default do uvicorn)
 EXPOSE 8000
 
-# Comando para rodar a aplicação
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Define o entrypoint para rodar Alembic + seed + API
+ENTRYPOINT ["./entrypoint.sh"]
