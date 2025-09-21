@@ -53,7 +53,7 @@ def obter_produto(produto_id: int, db: Session = Depends(database.get_db)):
 
     Returns:
         Produto correspondente ao ID.
-    
+
     Raises:
         HTTPException: 404 se o produto não for encontrado.
     """
