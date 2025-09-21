@@ -8,3 +8,5 @@ alembic==1.16.5
 flake8==7.0.0
 pep8-naming==0.13.3
 flake8-docstrings==1.7.0
+pymysql
+cryptography

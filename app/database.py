@@ -1,22 +1,17 @@
-"""Configuração do banco de dados para o sistema EasyOrder."""
+"""Configuração do banco de dados (MySQL via env ou SQLite local)."""
 
 import os
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 
+# Se não houver DATABASE_URL, cai no SQLite em ./data/easyorder.db
+DEFAULT_SQLITE_URL = "sqlite:///./data/easyorder.db"
+DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_SQLITE_URL)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
-DB_PATH = os.path.join(BASE_DIR, "..", "data", "easyorder.db")
-
-SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
 
 
