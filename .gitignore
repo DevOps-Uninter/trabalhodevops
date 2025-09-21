@@ -5,3 +5,8 @@ venv/
 *.db
 .env
 .venv
+infra/terraform/terraform.tfvars
+infra/terraform/terraform.tfstate
+infra/terraform/terraform.tfstate.backup
+.terraform/
+
