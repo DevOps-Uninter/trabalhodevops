@@ -52,7 +52,7 @@ jobs:
 
       - name: Rodar testes com pytest
         run: |
-          pytest
+          python -m pytest
 
   trivy-scan:
     name: Scan de Vulnerabilidades com Trivy
