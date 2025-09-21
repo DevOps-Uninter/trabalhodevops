@@ -2,8 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app import crud, schemas
-from app import schemas, database
+from app import crud, schemas, database
 
 router = APIRouter(prefix="/clientes", tags=["Clientes"])
 
@@ -24,7 +23,11 @@ def criar_cliente(cliente: schemas.ClienteCreate, db: Session = Depends(database
 
 
 @router.get("/", response_model=list[schemas.Cliente])
-def listar_clientes(skip: int = 0, limit: int = 10, db: Session = Depends(database.get_db)):
+def listar_clientes(
+    skip: int = 0, limit:
+    int = 10,
+    db: Session = Depends(database.get_db)
+):
     """
     Lista os clientes cadastrados.
 
