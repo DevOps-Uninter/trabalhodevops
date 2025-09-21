@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import crud, schemas, database
 
-router = APIRouter(prefix="/clientes", tags=["Clientes"])
+router = APIRouter(tags=["Clientes"])
 
 
 @router.post("/", response_model=schemas.Cliente)

@@ -32,9 +32,32 @@ jobs:
         run: |
           pydocstyle app
 
+  test:
+    name: Executar Testes
+    runs-on: ubuntu-latest
+    needs: lint # Garante que os testes só rodem se o lint passar
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Instalar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+
+      - name: Rodar testes com pytest
+        run: |
+          python -m pytest
+
   trivy-scan:
     name: Scan de Vulnerabilidades com Trivy
     runs-on: ubuntu-latest
+    needs: test # Garante que o scan só rode se os testes passarem
 
     steps:
       - name: Checkout do código
