@@ -1,13 +1,40 @@
 version: "3.9"
 
 services:
-  easyorder:
+  db:
+    image: mysql:8.0
+    container_name: easyorder-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-easyorder}
+      MYSQL_USER: ${MYSQL_USER:-easyuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-easypass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
     build: .
-    container_name: easyorder
+    container_name: easyorder-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-mysql+pymysql://easyuser:easypass@db:3306/easyorder}
+      DO_SEED: ${DO_SEED:-true}
+      UVICORN_HOST: 0.0.0.0
+      UVICORN_PORT: 8000
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/app/data
-    environment:
-      - DATABASE_URL=sqlite:///./data/easyorder.db
-    entrypoint: ./entrypoint.sh
+      - .:/app
+
+volumes:
+  db_data:
