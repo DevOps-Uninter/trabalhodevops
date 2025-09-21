@@ -71,7 +71,7 @@ resource "aws_security_group" "easyorder_sg" {
   name        = "easyorder-sg"
   description = "Permite acesso SSH e API para a instancia EasyOrder"
   vpc_id      = aws_vpc.easyorder_vpc.id
-   ingress {
+  ingress {
     description = "SSH from Anywhere (for GitHub Actions)"
     from_port   = 22
     to_port     = 22
