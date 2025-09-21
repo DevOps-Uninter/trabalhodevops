@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app import crud, schemas
 from app.database import SessionLocal
 
-router = APIRouter(prefix="/produtos", tags=["Produtos"])
+router = APIRouter(tags=["Produtos"])
 
 
 # cadastrar um produto
