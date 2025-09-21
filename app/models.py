@@ -2,7 +2,7 @@
 
 # External libraries
 from sqlalchemy import (
-    Column, Integer, Float, String, ForeignKey, DateTime, Numeric, Text
+    Column, Integer, Float, String, ForeignKey, DateTime, Numeric
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
