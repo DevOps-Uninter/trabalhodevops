@@ -15,7 +15,7 @@ from app.routers.entregas import router as entregas_router
 # Inicializa a aplicação
 app = FastAPI(
     title="EasyOrder API",
-    description="API para gerenciamento de pedidos e clientes.",
+    description="EasyOrder é uma API para gerenciamento de pedidos, clientes, e etc",
     version="1.0.0",
 )
 
@@ -28,7 +28,7 @@ def read_root():
     Returns:
         dict: Mensagem de boas-vindas.
     """
-    return {"message": "Bem-vindo ao EasyOrder!"}
+    return {"message": "Bem-vindo ao EasyOrder, a Api feita por alunos da Uninter!"}
 
 
 # Inclui os routers existentes
