@@ -142,8 +142,12 @@ Este projeto é um trabalho prático da disciplina de **DevOps** e tem como foco
 
 - **Eliseu de Lima Andrade**  
   - RU: 4709242  
-  - GitHub: *(não informado)*
+  - GitHub: [eliseulima5] (https://github.com/eliseulima5) 
 
 - **Jamile Santana da Silva**  
   - RU: 4773362  
-  - GitHub: *(não informado)*
+  - GitHub: [Jhamyllie] (https://github.com/Jhamyllie)
+ 
+-  **LUCAS SILVA**  
+  - RU: 4693460  
+  - GitHub: [luc4s-jpg] .(https://github.com/luc4s-jpg).
