@@ -2,24 +2,14 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from app import crud, schemas
-from app.database import SessionLocal
+from app import schemas, database
 
 router = APIRouter(prefix="/clientes", tags=["Clientes"])
 
 
-def get_db():
-    """Cria e fecha a sessão com o banco de dados."""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
 @router.post("/", response_model=schemas.Cliente)
-def criar_cliente(cliente: schemas.ClienteCreate, db: Session = Depends(get_db)):
+def criar_cliente(cliente: schemas.ClienteCreate, db: Session = Depends(database.get_db)):
     """
     Cria um novo cliente.
 
@@ -34,7 +24,7 @@ def criar_cliente(cliente: schemas.ClienteCreate, db: Session = Depends(get_db))
 
 
 @router.get("/", response_model=list[schemas.Cliente])
-def listar_clientes(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def listar_clientes(skip: int = 0, limit: int = 10, db: Session = Depends(database.get_db)):
     """
     Lista os clientes cadastrados.
 
@@ -50,7 +40,7 @@ def listar_clientes(skip: int = 0, limit: int = 10, db: Session = Depends(get_db
 
 
 @router.get("/{cliente_id}", response_model=schemas.Cliente)
-def obter_cliente(cliente_id: int, db: Session = Depends(get_db)):
+def obter_cliente(cliente_id: int, db: Session = Depends(database.get_db)):
     """
     Obtém um cliente pelo ID.
 
