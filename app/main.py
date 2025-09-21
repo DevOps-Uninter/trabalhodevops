@@ -4,7 +4,6 @@
 from fastapi import FastAPI
 
 # Internal libraries
-from app.database import Base, engine
 from app.routers.pedidos import router as pedidos_router
 from app.routers.clientes import router as clientes_router
 from app.routers.relatorios import router as relatorios_router
