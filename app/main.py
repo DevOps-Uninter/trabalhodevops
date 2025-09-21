@@ -13,9 +13,6 @@ from app.routers.pagamentos import router as pagamentos_router
 from app.routers.entregas import router as entregas_router
 
 
-# Cria todas as tabelas no banco
-Base.metadata.create_all(bind=engine)
-
 # Inicializa a aplicação
 app = FastAPI(
     title="EasyOrder API",
