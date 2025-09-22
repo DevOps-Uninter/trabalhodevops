@@ -14,22 +14,24 @@ provider "aws" {
   region = "sa-east-1"
 }
 
-# Variável para o seu endereço de IP
+# Variável para o seu endereço de IP (pode ser usada no SG)
 variable "my_ip_cidr" {
   type        = string
   description = "O CIDR do seu IP para acesso SSH"
+  default     = "0.0.0.0/0" # Por enquanto aberto para o GitHub Actions
 }
 
-# A sua rede privada na nuvem (VPC)
+# -----------------------
+# Rede (VPC, Subnet, IGW)
+# -----------------------
 resource "aws_vpc" "easyorder_vpc" {
   cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true # Necessário para a instância ter um nome DNS
+  enable_dns_hostnames = true
   tags = {
     Name = "easyorder-vpc"
   }
 }
 
-# O "portão" para a internet
 resource "aws_internet_gateway" "easyorder_igw" {
   vpc_id = aws_vpc.easyorder_vpc.id
   tags = {
@@ -37,47 +39,50 @@ resource "aws_internet_gateway" "easyorder_igw" {
   }
 }
 
-# A "rua" dentro da sua rede
 resource "aws_subnet" "easyorder_subnet_public" {
   vpc_id                  = aws_vpc.easyorder_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "sa-east-1a"
-  map_public_ip_on_launch = true # Atribui IP público automaticamente
+  map_public_ip_on_launch = true
   tags = {
     Name = "easyorder-subnet-public"
   }
 }
 
-# O "mapa" que liga a rua ao portão da internet
 resource "aws_route_table" "easyorder_rt" {
   vpc_id = aws_vpc.easyorder_vpc.id
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.easyorder_igw.id
   }
+
   tags = {
     Name = "easyorder-rt-public"
   }
 }
 
-# Associação do mapa à rua
 resource "aws_route_table_association" "a" {
   subnet_id      = aws_subnet.easyorder_subnet_public.id
   route_table_id = aws_route_table.easyorder_rt.id
 }
 
-# A "firewall" da sua instância
+# ------------------------
+# Segurança (Security Group)
+# ------------------------
 resource "aws_security_group" "easyorder_sg" {
   name        = "easyorder-sg"
-  description = "Permite acesso SSH e API para a instancia EasyOrder"
+  description = "Permite acesso SSH e API"
   vpc_id      = aws_vpc.easyorder_vpc.id
+
   ingress {
-    description = "SSH from Anywhere (for GitHub Actions)"
+    description = "SSH (usado pelo GitHub Actions)"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   ingress {
     description = "API access"
     from_port   = 8000
@@ -85,102 +90,76 @@ resource "aws_security_group" "easyorder_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = {
     Name = "easyorder-sg"
   }
 }
 
-# Recurso que carrega a sua chave pública para a AWS
+# ------------------------
+# Chave SSH
+# ------------------------
 resource "aws_key_pair" "easyorder_key" {
   key_name   = "easyorder-key"
   public_key = file("~/.ssh/easyorder_key.pub")
 }
 
-# --- MONITORAMENTO (CLOUDWATCH) ---
-
-# Política de confiança que permite que o serviço EC2 assuma esta Role
-data "aws_iam_policy_document" "assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
-# A Role (identidade) para a nossa instância EC2
-resource "aws_iam_role" "easyorder_instance_role" {
-  name               = "easyorder-instance-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
-}
-
-# A política de permissões que permite escrever no CloudWatch
-resource "aws_iam_policy" "cloudwatch_policy" {
-  name        = "easyorder-cloudwatch-policy"
-  description = "Permite que a instância EC2 envie logs para o CloudWatch"
-  policy = jsonencode({
+# ------------------------
+# IAM Role para CloudWatch
+# ------------------------
+resource "aws_iam_role" "ec2_role" {
+  name = "easyorder-ec2-role"
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action = [
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ]
-        Effect   = "Allow"
-        Resource = "${aws_cloudwatch_log_group.easyorder_logs.arn}:*"
-      },
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
     ]
   })
 }
 
-# Anexa a política de permissões à Role
 resource "aws_iam_role_policy_attachment" "cloudwatch_attach" {
-  role       = aws_iam_role.easyorder_instance_role.name
-  policy_arn = aws_iam_policy.cloudwatch_policy.arn
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
-# Um "perfil" que liga a Role à instância para que ela possa ser usada
-resource "aws_iam_instance_profile" "easyorder_instance_profile" {
-  name = "easyorder-instance-profile"
-  role = aws_iam_role.easyorder_instance_role.name
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "easyorder-ec2-profile"
+  role = aws_iam_role.ec2_role.name
 }
 
-# Recurso para o grupo de logs da nossa API no CloudWatch
-resource "aws_cloudwatch_log_group" "easyorder_logs" {
-  name              = "/easyorder/api"
-  retention_in_days = 7 # Guarda os logs por 7 dias para não gerar custos
-
-  tags = {
-    Name = "easyorder-api-logs"
-  }
-}
-
-# O seu servidor na nuvem (Instância EC2)
+# ------------------------
+# EC2 Instance
+# ------------------------
 resource "aws_instance" "easyorder" {
-  ami           = "ami-043edbf44f50364c5"
-  instance_type = "t3.micro"
-  key_name      = aws_key_pair.easyorder_key.key_name
-  # Coloca a instância na "rua" e na "firewall" corretas
-  subnet_id              = aws_subnet.easyorder_subnet_public.id
-  vpc_security_group_ids = [aws_security_group.easyorder_sg.id]
-
-  # Associa o perfil da instância com a Role de monitoramento
-  iam_instance_profile = aws_iam_instance_profile.easyorder_instance_profile.name
+  ami                         = "ami-043edbf44f50364c5" # Ubuntu 22.04 em sa-east-1
+  instance_type               = "t3.micro"
+  key_name                    = aws_key_pair.easyorder_key.key_name
+  subnet_id                   = aws_subnet.easyorder_subnet_public.id
+  vpc_security_group_ids      = [aws_security_group.easyorder_sg.id]
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
 
   tags = {
     Name = "easyorder-instance"
   }
 }
 
-# Bloco de output para mostrar o IP público da instância
+# ------------------------
+# Output
+# ------------------------
 output "instance_public_ip" {
-  description = "O IP publico da instancia EC2"
+  description = "O IP público da instância EC2"
   value       = aws_instance.easyorder.public_ip
 }
