@@ -39,13 +39,14 @@ jobs:
               sudo systemctl restart docker
             fi
 
-            # Instala Docker Compose V2 plugin (remove v1 se existir)
+            # Instala Docker Compose V2 plugin
             sudo apt-get remove -y docker-compose || true
             DOCKER_CONFIG=\${DOCKER_CONFIG:-\$HOME/.docker}
             mkdir -p \$DOCKER_CONFIG/cli-plugins
             curl -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 \
               -o \$DOCKER_CONFIG/cli-plugins/docker-compose
             chmod +x \$DOCKER_CONFIG/cli-plugins/docker-compose
+            docker compose version
 
             # Clona ou atualiza o repositório
             if [ -d "/home/ubuntu/trabalhodevops/.git" ]; then
