@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 if os.getenv("TEST_ENV") != "true":
-    cw_handler = CloudWatchLogHandler(log_group_name=LOG_GROUP_NAME, boto3_session=None)
+    cw_handler = CloudWatchLogHandler(log_group_name=LOG_GROUP_NAME)
     logger.addHandler(cw_handler)
 
 app = FastAPI(
