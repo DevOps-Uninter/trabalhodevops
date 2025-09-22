@@ -24,7 +24,6 @@ if os.getenv("TEST_ENV") != "true":
     try:
         cw_handler = CloudWatchLogHandler(
             log_group_name=LOG_GROUP_NAME,
-            region_name=AWS_REGION,
         )
         logger.addHandler(cw_handler)
         logger.info("✅ CloudWatch LogHandler inicializado com sucesso.")
