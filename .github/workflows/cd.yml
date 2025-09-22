@@ -32,7 +32,7 @@ jobs:
             fi
             if ! command -v docker >/dev/null 2>&1; then
               # Para Ubuntu via user_data já deve existir, mas deixamos resiliente
-              sudo apt-get install -y docker.io docker-compose-plugin
+              sudo apt-get install -y docker.io docker-compose
               sudo systemctl enable --now docker
               sudo usermod -aG docker ubuntu || true
             fi
@@ -40,7 +40,7 @@ jobs:
             # Clona ou atualiza o repositório
             if [ ! -d "~/trabalhodevops/.git" ]; then
               rm -rf ~/trabalhodevops || true
-              git clone https://github.com/DevOps-Uninter/trabalhodevops.git ~/trabalhodevops
+              git clone https://github.com/desyreegarcia/trabalhodevops.git ~/trabalhodevops
             fi
             cd ~/trabalhodevops
             git pull --rebase --autostash || git fetch --all --prune

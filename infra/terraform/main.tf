@@ -137,7 +137,7 @@ resource "aws_instance" "easyorder" {
               sudo apt-get install -y ca-certificates curl gnupg lsb-release git
 
               if ! command -v docker >/dev/null 2>&1; then
-                sudo apt-get install -y docker.io docker-compose-plugin
+                sudo apt-get install -y docker.io docker-compose
                 sudo systemctl enable --now docker
                 sudo usermod -aG docker ubuntu || true
               fi
