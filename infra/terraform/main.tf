@@ -102,6 +102,66 @@ resource "aws_key_pair" "easyorder_key" {
   public_key = file("~/.ssh/easyorder_key.pub")
 }
 
+# --- MONITORAMENTO (CLOUDWATCH) ---
+
+# Política de confiança que permite que o serviço EC2 assuma esta Role
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+# A Role (identidade) para a nossa instância EC2
+resource "aws_iam_role" "easyorder_instance_role" {
+  name               = "easyorder-instance-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+# A política de permissões que permite escrever no CloudWatch
+resource "aws_iam_policy" "cloudwatch_policy" {
+  name        = "easyorder-cloudwatch-policy"
+  description = "Permite que a instância EC2 envie logs para o CloudWatch"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Effect   = "Allow"
+        Resource = "${aws_cloudwatch_log_group.easyorder_logs.arn}:*"
+      },
+    ]
+  })
+}
+
+# Anexa a política de permissões à Role
+resource "aws_iam_role_policy_attachment" "cloudwatch_attach" {
+  role       = aws_iam_role.easyorder_instance_role.name
+  policy_arn = aws_iam_policy.cloudwatch_policy.arn
+}
+
+# Um "perfil" que liga a Role à instância para que ela possa ser usada
+resource "aws_iam_instance_profile" "easyorder_instance_profile" {
+  name = "easyorder-instance-profile"
+  role = aws_iam_role.easyorder_instance_role.name
+}
+
+# Recurso para o grupo de logs da nossa API no CloudWatch
+resource "aws_cloudwatch_log_group" "easyorder_logs" {
+  name              = "/easyorder/api"
+  retention_in_days = 7 # Guarda os logs por 7 dias para não gerar custos
+
+  tags = {
+    Name = "easyorder-api-logs"
+  }
+}
+
 # O seu servidor na nuvem (Instância EC2)
 resource "aws_instance" "easyorder" {
   ami           = "ami-043edbf44f50364c5"
@@ -110,6 +170,10 @@ resource "aws_instance" "easyorder" {
   # Coloca a instância na "rua" e na "firewall" corretas
   subnet_id              = aws_subnet.easyorder_subnet_public.id
   vpc_security_group_ids = [aws_security_group.easyorder_sg.id]
+
+  # Associa o perfil da instância com a Role de monitoramento
+  iam_instance_profile = aws_iam_instance_profile.easyorder_instance_profile.name
+
   tags = {
     Name = "easyorder-instance"
   }
