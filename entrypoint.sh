@@ -25,5 +25,5 @@ if [ "${DO_SEED:-false}" = "true" ]; then
   python seed.py || true
 fi
 
-echo "==> Iniciando a API..."
+echo "==> Iniciando a API EasyOrder..."
 exec uvicorn app.main:app --host "${UVICORN_HOST:-0.0.0.0}" --port "${UVICORN_PORT:-8000}"
