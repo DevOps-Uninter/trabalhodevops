@@ -21,7 +21,7 @@ services:
       retries: 20
 
   api:
-    build: .
+    image: ghcr.io/devops-uninter/trabalhodevops:latest
     container_name: easyorder-api
     depends_on:
       db:
