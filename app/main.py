@@ -3,7 +3,7 @@
 import logging
 import os
 from fastapi import FastAPI
-from watchtower import CloudWatchLogHandler
+# from watchtower import CloudWatchLogHandler
 
 # Internal libraries
 from app.routers.pedidos import router as pedidos_router
@@ -18,9 +18,9 @@ LOG_GROUP_NAME = os.getenv("LOG_GROUP_NAME", "/easyorder/api")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-if os.getenv("TEST_ENV") != "true":
-    cw_handler = CloudWatchLogHandler(log_group_name=LOG_GROUP_NAME)
-    logger.addHandler(cw_handler)
+# if os.getenv("TEST_ENV") != "true":
+#     cw_handler = CloudWatchLogHandler(log_group_name=LOG_GROUP_NAME)
+#     logger.addHandler(cw_handler)
 
 app = FastAPI(
     title="EasyOrder API",
@@ -39,7 +39,7 @@ async def startup_event():
 def read_root():
     """Rota raiz da API."""
     logger.info("Rota raiz acessada com sucesso por um cliente.")
-    return {"message": "Bem-vindo ao EasyOrder! Monitoramento Ativo!"}
+    return {"message": "Bem-vindo ao EasyOrder! Monitoramento Local Ativo!"}
 
 
 app.include_router(pedidos_router, prefix="/pedidos", tags=["Pedidos"])
