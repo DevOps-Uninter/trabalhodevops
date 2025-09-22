@@ -20,9 +20,8 @@ jobs:
 
       - name: Executar comandos de deploy no servidor
         run: |
-          ssh -tt -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             cd ~/trabalhodevops
             git pull
             docker compose up --build -d
-            docker compose logs --tail=50
           EOF
