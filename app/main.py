@@ -28,6 +28,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
+
 @app.on_event("startup")
 async def startup_event():
     """Loga um evento quando a API inicia."""
