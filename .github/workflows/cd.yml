@@ -31,7 +31,6 @@ jobs:
               sudo apt-get install -y git
             fi
             if ! command -v docker >/dev/null 2>&1; then
-              # Para Ubuntu via user_data já deve existir, mas deixamos resiliente
               sudo apt-get install -y docker.io docker-compose
               sudo systemctl enable --now docker
               sudo usermod -aG docker ubuntu || true
@@ -39,22 +38,23 @@ jobs:
             fi
 
             # Clona ou atualiza o repositório
-            if [ ! -d "~/trabalhodevops/.git" ]; then
-              rm -rf ~/trabalhodevops || true
-              git clone https://github.com/DevOps-Uninter/trabalhodevops.git ~/trabalhodevops
+            if [ -d "/home/ubuntu/trabalhodevops/.git" ]; then
+              cd /home/ubuntu/trabalhodevops
+              git fetch --all --prune
+              git reset --hard origin/main
+            else
+              sudo rm -rf /home/ubuntu/trabalhodevops || true
+              git clone https://github.com/DevOps-Uninter/trabalhodevops.git /home/ubuntu/trabalhodevops
+              cd /home/ubuntu/trabalhodevops
             fi
-            cd ~/trabalhodevops
-            git pull --rebase --autostash || git fetch --all --prune
 
-            # Tenta docker compose V2 plugin; se falhar, usa docker-compose
+            # Sobe os containers
             if docker compose version >/dev/null 2>&1; then
               docker compose up --build -d
+            elif command -v docker-compose >/dev/null 2>&1; then
+              docker-compose up --build -d
             else
-              if command -v docker-compose >/dev/null 2>&1; then
-                docker-compose up --build -d
-              else
-                echo "docker compose/docker-compose não encontrado" >&2
-                exit 1
-              fi
+              echo "docker compose/docker-compose não encontrado" >&2
+              exit 1
             fi
           EOF
