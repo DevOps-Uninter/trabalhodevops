@@ -37,9 +37,7 @@ async def startup_event():
 
 @app.get("/")
 def read_root():
-    """
-    Rota raiz da API.
-    """
+    """Rota raiz da API."""
     logger.info("Rota raiz acessada com sucesso por um cliente.")
     return {"message": "Bem-vindo ao EasyOrder! Monitoramento Ativo!"}
 
