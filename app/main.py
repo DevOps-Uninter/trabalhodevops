@@ -1,7 +1,9 @@
 """Módulo principal da aplicação FastAPI EasyOrder."""
 
-# External libraries
+import logging
+import os
 from fastapi import FastAPI
+from watchtower import CloudWatchLogHandler
 
 # Internal libraries
 from app.routers.pedidos import router as pedidos_router
@@ -11,8 +13,15 @@ from app.routers.produtos import router as produtos_router
 from app.routers.pagamentos import router as pagamentos_router
 from app.routers.entregas import router as entregas_router
 
+LOG_GROUP_NAME = os.getenv("LOG_GROUP_NAME", "/easyorder/api")
 
-# Inicializa a aplicação
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+if os.getenv("TEST_ENV") != "true":
+    cw_handler = CloudWatchLogHandler(log_group_name=LOG_GROUP_NAME)
+    logger.addHandler(cw_handler)
+
 app = FastAPI(
     title="EasyOrder API",
     description="API para gerenciamento de pedidos e clientes.",
@@ -20,18 +29,19 @@ app = FastAPI(
 )
 
 
+@app.on_event("startup")
+async def startup_event():
+    """Loga um evento quando a API inicia."""
+    logger.info("API Iniciada e pronta para receber requisições.")
+
+
 @app.get("/")
 def read_root():
-    """
-    Rota raiz da API.
-
-    Returns:
-        dict: Mensagem de boas-vindas.
-    """
-    return {"message": "Bem-vindo ao EasyOrder!"}
+    """Rota raiz da API."""
+    logger.info("Rota raiz acessada com sucesso por um cliente.")
+    return {"message": "Bem-vindo ao EasyOrder! Monitoramento Ativo!"}
 
 
-# Inclui os routers existentes
 app.include_router(pedidos_router, prefix="/pedidos", tags=["Pedidos"])
 app.include_router(clientes_router, prefix="/clientes", tags=["Clientes"])
 app.include_router(relatorios_router, prefix="/relatorios", tags=["Relatórios"])
