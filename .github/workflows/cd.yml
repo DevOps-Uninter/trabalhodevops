@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # Permissão para escrever no GitHub Container Registry
+      packages: write
 
     steps:
       - name: Checkout do código
@@ -23,17 +23,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # NOVO PASSO: Converte o nome do repositório para minúsculas
+      - name: Preparar tags da imagem
+        id: prep
+        run: |
+          REPO=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
+          echo "repo=$REPO" >> $GITHUB_OUTPUT
+
       - name: Build e Push da imagem
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          # USA A VERSÃO EM MINÚSCULAS GERADA NO PASSO ANTERIOR
+          tags: ghcr.io/${{ steps.prep.outputs.repo }}:latest
 
   deploy:
     name: Deploy no Servidor EC2
     runs-on: ubuntu-latest
-    needs: build-and-push # Só executa depois de a imagem estar pronta
+    needs: build-and-push
 
     steps:
       - name: Configurar chave SSH
@@ -43,15 +51,9 @@ jobs:
 
       - name: Executar comandos de deploy no servidor
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC_PUBLIC_IP }} << 'EOF'
             cd ~/trabalhodevops
-            
-            # Faz o login no GHCR para poder descarregar a imagem privada do repositório
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-            # Descarrega a imagem mais recente do registo
             docker compose pull
-            
-            # Inicia os serviços com a nova imagem (sem --build)
             docker compose up -d
           EOF
