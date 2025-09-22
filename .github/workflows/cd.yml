@@ -21,7 +21,39 @@ jobs:
       - name: Executar comandos de deploy no servidor
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            set -euxo pipefail
+
+            # Atualiza pacotes
+            sudo apt-get update -y || true
+
+            # Garante git, docker e plugin docker compose
+            if ! command -v git >/dev/null 2>&1; then
+              sudo apt-get install -y git
+            fi
+            if ! command -v docker >/dev/null 2>&1; then
+              # Para Ubuntu via user_data já deve existir, mas deixamos resiliente
+              sudo apt-get install -y docker.io docker-compose-plugin
+              sudo systemctl enable --now docker
+              sudo usermod -aG docker ubuntu || true
+            fi
+
+            # Clona ou atualiza o repositório
+            if [ ! -d "~/trabalhodevops/.git" ]; then
+              rm -rf ~/trabalhodevops || true
+              git clone https://github.com/DevOps-Uninter/trabalhodevops.git ~/trabalhodevops
+            fi
             cd ~/trabalhodevops
-            git pull
-            docker compose up --build -d
+            git pull --rebase --autostash || git fetch --all --prune
+
+            # Tenta docker compose V2 plugin; se falhar, usa docker-compose
+            if docker compose version >/dev/null 2>&1; then
+              docker compose up --build -d
+            else
+              if command -v docker-compose >/dev/null 2>&1; then
+                docker-compose up --build -d
+              else
+                echo "docker compose/docker-compose não encontrado" >&2
+                exit 1
+              fi
+            fi
           EOF
