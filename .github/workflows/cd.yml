@@ -13,7 +13,6 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v3
 
-      # Validação dos secrets
       - name: Validar secrets
         run: |
           if [ -z "${{ secrets.EC2_PUBLIC_IP }}" ]; then
@@ -24,42 +23,30 @@ jobs:
             echo "❌ Secret EC2_SSH_KEY não configurado!"
             exit 1
           fi
-          echo "✅ Secrets verificados com sucesso!"
 
       - name: Configurar chave SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
+      - name: Instalar Docker Compose V2 no servidor
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            set -euxo pipefail
+            sudo apt-get update -y
+            sudo apt-get remove -y docker-compose || true
+            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+            mkdir -p $DOCKER_CONFIG/cli-plugins
+            curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) \
+              -o $DOCKER_CONFIG/cli-plugins/docker-compose
+            chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+            docker compose version
+          EOF
+
       - name: Executar comandos de deploy no servidor
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             set -euxo pipefail
-
-            # Atualiza pacotes
-            sudo apt-get update -y || true
-
-            # Garante git
-            if ! command -v git >/dev/null 2>&1; then
-              sudo apt-get install -y git
-            fi
-
-            # Garante docker
-            if ! command -v docker >/dev/null 2>&1; then
-              sudo apt-get install -y docker.io
-              sudo systemctl enable --now docker
-              sudo usermod -aG docker ubuntu || true
-              sudo systemctl restart docker
-            fi
-
-            # Instala Docker Compose V2 plugin
-            sudo apt-get remove -y docker-compose || true
-            DOCKER_CONFIG=\${DOCKER_CONFIG:-\$HOME/.docker}
-            mkdir -p \$DOCKER_CONFIG/cli-plugins
-            curl -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 \
-              -o \$DOCKER_CONFIG/cli-plugins/docker-compose
-            chmod +x \$DOCKER_CONFIG/cli-plugins/docker-compose
-            docker compose version
 
             # Clona ou atualiza o repositório
             if [ -d "/home/ubuntu/trabalhodevops/.git" ]; then
@@ -67,12 +54,12 @@ jobs:
               git fetch --all --prune
               git reset --hard origin/main
             else
-              sudo rm -rf /home/ubuntu/trabalhodevops || true
+              rm -rf /home/ubuntu/trabalhodevops || true
               git clone https://github.com/DevOps-Uninter/trabalhodevops.git /home/ubuntu/trabalhodevops
               cd /home/ubuntu/trabalhodevops
             fi
 
-            # Sobe os containers usando Compose V2
-            docker compose down -v --remove-orphans || true
-            docker compose up --build -d
+            # Sobe os containers
+            docker compose down -v || true
+            docker compose up -d --build
           EOF
