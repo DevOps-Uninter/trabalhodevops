@@ -14,7 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Dá permissão de execução ao entrypoint
-RUN chmod +x /app/entrypoint.sh
+# Copia e garante permissão + corrige CRLF do entrypoint
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod 755 /app/entrypoint.sh \
+    && sed -i 's/\r$//' /app/entrypoint.sh
 
 # Expõe a porta da API (default do uvicorn)
 EXPOSE 8000
