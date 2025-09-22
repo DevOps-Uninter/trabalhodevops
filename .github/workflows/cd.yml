@@ -26,16 +26,26 @@ jobs:
             # Atualiza pacotes
             sudo apt-get update -y || true
 
-            # Garante git, docker e plugin docker compose
+            # Garante git
             if ! command -v git >/dev/null 2>&1; then
               sudo apt-get install -y git
             fi
+
+            # Garante docker
             if ! command -v docker >/dev/null 2>&1; then
-              sudo apt-get install -y docker.io docker-compose
+              sudo apt-get install -y docker.io
               sudo systemctl enable --now docker
               sudo usermod -aG docker ubuntu || true
               sudo systemctl restart docker
             fi
+
+            # Instala Docker Compose V2 plugin (remove v1 se existir)
+            sudo apt-get remove -y docker-compose || true
+            DOCKER_CONFIG=\${DOCKER_CONFIG:-\$HOME/.docker}
+            mkdir -p \$DOCKER_CONFIG/cli-plugins
+            curl -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 \
+              -o \$DOCKER_CONFIG/cli-plugins/docker-compose
+            chmod +x \$DOCKER_CONFIG/cli-plugins/docker-compose
 
             # Clona ou atualiza o repositório
             if [ -d "/home/ubuntu/trabalhodevops/.git" ]; then
@@ -48,13 +58,7 @@ jobs:
               cd /home/ubuntu/trabalhodevops
             fi
 
-            # Sobe os containers
-            if docker compose version >/dev/null 2>&1; then
-              docker compose up --build -d
-            elif command -v docker-compose >/dev/null 2>&1; then
-              docker-compose up --build -d
-            else
-              echo "docker compose/docker-compose não encontrado" >&2
-              exit 1
-            fi
+            # Sobe os containers usando Compose V2
+            docker compose down -v --remove-orphans || true
+            docker compose up --build -d
           EOF
