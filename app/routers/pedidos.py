@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app import crud, schemas, database
 from app.main import sqs_client, SQS_QUEUE_URL 
 
+
 router = APIRouter(tags=["Pedidos"])
 logger = logging.getLogger(__name__)
 
