@@ -9,6 +9,7 @@ from sqlalchemy.pool import StaticPool
 from app.database import Base, get_db
 from app.main import app
 
+
 # URL do banco de dados de teste (SQLite em memória)
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 
@@ -42,7 +43,7 @@ def test_client(db_session):
     """
 
     def override_get_db():
-        """Sobrescreve a dependência do banco de dados."""
+        """Sobrescreve a dependência do banco de dados para usar o SQLite em memória."""
         try:
             yield db_session
         finally:
