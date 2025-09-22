@@ -107,7 +107,7 @@ resource "aws_key_pair" "easyorder_key" {
   public_key = file("~/.ssh/easyorder_key.pub")
 }
 
-# Data source para buscar sempre a última AMI oficial Ubuntu 22.04
+
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical (Ubuntu)
@@ -130,14 +130,41 @@ resource "aws_instance" "easyorder" {
   key_name      = aws_key_pair.easyorder_key.key_name
   subnet_id     = aws_subnet.easyorder_subnet_public.id
   vpc_security_group_ids = [aws_security_group.easyorder_sg.id]
+  user_data = <<-EOF
+              #!/usr/bin/env bash
+              set -euxo pipefail
+              sudo apt-get update -y
+              sudo apt-get install -y ca-certificates curl gnupg lsb-release git
 
+              if ! command -v docker >/dev/null 2>&1; then
+                sudo apt-get install -y docker.io docker-compose
+                sudo systemctl enable --now docker
+                sudo usermod -aG docker ubuntu || true
+              fi
+
+              mkdir -p /home/ubuntu/trabalhodevops
+              chown -R ubuntu:ubuntu /home/ubuntu/trabalhodevops
+              EOF
   tags = {
     Name = "easyorder-instance"
   }
 }
 
+# Elastic IP para IP público estável
+resource "aws_eip" "easyorder_eip" {
+  domain = "vpc"
+  tags = {
+    Name = "easyorder-eip"
+  }
+}
+
+resource "aws_eip_association" "easyorder_eip_assoc" {
+  instance_id   = aws_instance.easyorder.id
+  allocation_id = aws_eip.easyorder_eip.id
+}
+
 # Output para mostrar IP público
 output "instance_public_ip" {
-  description = "O IP publico da instancia EC2"
-  value       = aws_instance.easyorder.public_ip
+  description = "O IP publico (EIP) da instancia EC2"
+  value       = aws_eip.easyorder_eip.public_ip
 }
