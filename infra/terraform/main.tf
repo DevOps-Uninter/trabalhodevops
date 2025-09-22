@@ -140,6 +140,7 @@ resource "aws_instance" "easyorder" {
                 sudo apt-get install -y docker.io docker-compose
                 sudo systemctl enable --now docker
                 sudo usermod -aG docker ubuntu || true
+                sudo systemctl restart docker
               fi
 
               mkdir -p /home/ubuntu/trabalhodevops
