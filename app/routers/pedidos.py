@@ -1,6 +1,5 @@
 """Rotas relacionadas aos pedidos."""
 
-import json
 import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
