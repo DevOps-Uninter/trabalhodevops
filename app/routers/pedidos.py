@@ -1,20 +1,22 @@
 """Rotas relacionadas aos pedidos."""
 
-import json
 import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 # Own libraries
 from app import crud, schemas, database
-from app.sqs import sqs_client, SQS_QUEUE_URL
+from app.sqs import enviar_mensagem
+
 router = APIRouter(tags=["Pedidos"])
 logger = logging.getLogger(__name__)
 
 
 @router.post("/", response_model=schemas.Pedido)
 def criar_pedido(
-    cliente_id: int, pedido: schemas.PedidoCreate, db: Session = Depends(database.get_db)
+    cliente_id: int,
+    pedido: schemas.PedidoCreate,
+    db: Session = Depends(database.get_db),
 ):
     """Cria um novo pedido associado a um cliente e envia para a fila SQS.
 
@@ -28,22 +30,15 @@ def criar_pedido(
     """
     novo_pedido = crud.criar_pedido(db, pedido, cliente_id)
 
-    # Envia para fila SQS
-    if sqs_client and SQS_QUEUE_URL:
-        try:
-            sqs_client.send_message(
-                QueueUrl=SQS_QUEUE_URL,
-                MessageBody=json.dumps(
-                    {
-                        "pedido_id": novo_pedido.id,
-                        "cliente_id": cliente_id,
-                        "valor_total": str(novo_pedido.valor_total),
-                    }
-                ),
-            )
-            logger.info(f"📩 Pedido {novo_pedido.id} enviado para SQS com sucesso.")
-        except Exception as e:
-            logger.error(f"⚠️ Erro ao enviar pedido {novo_pedido.id} para SQS: {e}")
+    mensagem = {
+        "pedido_id": novo_pedido.id,
+        "cliente_id": cliente_id,
+        "valor_total": str(novo_pedido.valor_total),
+    }
+    if enviar_mensagem(mensagem):
+        logger.info(f"📩 Pedido {novo_pedido.id} enviado para SQS com sucesso.")
+    else:
+        logger.warning(f"⚠️ Pedido {novo_pedido.id} criado mas não enviado ao SQS.")
 
     return novo_pedido
 
@@ -86,7 +81,9 @@ def obter_pedido(pedido_id: int, db: Session = Depends(database.get_db)):
 
 @router.put("/{pedido_id}", response_model=schemas.Pedido)
 def atualizar_pedido(
-    pedido_id: int, pedido: schemas.PedidoUpdate, db: Session = Depends(database.get_db)
+    pedido_id: int,
+    pedido: schemas.PedidoUpdate,
+    db: Session = Depends(database.get_db),
 ):
     """
     Atualiza um pedido existente.
