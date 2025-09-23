@@ -8,6 +8,7 @@ class PedidoBase(BaseModel):
     """Schema base para pedidos."""
 
     descricao: str
+    valor_total: float = 0.0
 
 
 class PedidoCreate(PedidoBase):
