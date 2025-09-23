@@ -7,9 +7,7 @@ from sqlalchemy.orm import Session
 
 # Own libraries
 from app import crud, schemas, database
-from app.main import sqs_client, SQS_QUEUE_URL
-
-
+from app.sqs import sqs_client, SQS_QUEUE_URL
 router = APIRouter(tags=["Pedidos"])
 logger = logging.getLogger(__name__)
 
@@ -31,7 +29,7 @@ def criar_pedido(
     novo_pedido = crud.criar_pedido(db, pedido, cliente_id)
 
     # Envia para fila SQS
-    if SQS_QUEUE_URL:
+    if sqs_client and SQS_QUEUE_URL:
         try:
             sqs_client.send_message(
                 QueueUrl=SQS_QUEUE_URL,

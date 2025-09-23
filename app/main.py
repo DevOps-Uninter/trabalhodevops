@@ -2,7 +2,6 @@
 
 import logging
 import os
-import boto3
 from fastapi import FastAPI
 from watchtower import CloudWatchLogHandler
 
@@ -15,8 +14,6 @@ from app.routers.pagamentos import router as pagamentos_router
 from app.routers.entregas import router as entregas_router
 
 LOG_GROUP_NAME = os.getenv("LOG_GROUP_NAME", "/easyorder/api")
-AWS_REGION = os.getenv("AWS_DEFAULT_REGION", "sa-east-1")
-SQS_QUEUE_URL = os.getenv("SQS_QUEUE_URL")  # URL da fila SQS
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,9 +26,6 @@ if os.getenv("TEST_ENV") != "true":
         logger.info("✅ CloudWatch LogHandler inicializado com sucesso.")
     except Exception as e:
         logger.warning(f"⚠️ Falha ao inicializar CloudWatchLogHandler: {e}")
-
-# Inicializa cliente boto3 para SQS
-sqs_client = boto3.client("sqs", region_name=AWS_REGION)
 
 app = FastAPI(
     title="EasyOrder API",
@@ -51,8 +45,7 @@ def read_root():
     """Rota raiz da API."""
     logger.info("🏠 Rota raiz acessada com sucesso por um cliente.")
     return {
-        "message": "Bem-vindo ao EasyOrder! Monitoramento + SQS ativo!",
-        "sqs_configurado": bool(SQS_QUEUE_URL),
+        "message": "Bem-vindo ao EasyOrder! Monitoramento Ativo!"
     }
 
 
