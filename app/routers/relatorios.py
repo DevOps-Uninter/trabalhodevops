@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from app import models, schemas, database
 
-router = APIRouter(tags=["Relatorios"])
+router = APIRouter(tags=["Relatórios"])
 
 
 @router.get("/pedidos-por-cliente", response_model=list[schemas.RelatorioPedidosCliente])
