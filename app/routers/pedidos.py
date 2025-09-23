@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 # Own libraries
 from app import crud, schemas, database
-from app.sqs import enviar_mensagem  # usamos helper do serviço SQS
+from app.sqs import enviar_mensagem
 
 router = APIRouter(tags=["Pedidos"])
 logger = logging.getLogger(__name__)
