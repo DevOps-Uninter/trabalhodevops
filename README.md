@@ -10,11 +10,14 @@ O **EasyOrder** é um sistema de gerenciamento de pedidos que simula uma aplica�
 
 - **Linguagem:** Python 3.11+
 - **Framework:** FastAPI
+- **Orquestração:** Docker e Docker Compose
+- **Migrações de Banco de Dados:** Alembic
+- **Infraestrutura como Código (IaC):** Terraform
+- **CI/CD:** GitHub Actions
+- **Documentação:** Swagger UI
 - **Banco de Dados:**
   - SQLite (Desenvolvimento)
   - MySQL (Produção - AWS RDS)
-- **CI/CD:** GitHub Actions
-- **Documentação:** Swagger UI
 - **Monitoramento e Logs:** AWS CloudWatch
 - **Gerenciamento de Segredos:** AWS Secrets Manager
 - **Filas de Mensagens:** AWS SQS
@@ -22,6 +25,10 @@ O **EasyOrder** é um sistema de gerenciamento de pedidos que simula uma aplica�
 ---
 
 ## 🚀 Como Executar o Projeto Localmente
+
+### Pré-requisitos
+- Docker
+- Docker Compose
 
 ### 1. Clonar o Repositório
 
@@ -37,40 +44,35 @@ cd trabalhodevops
 git git@github.com:DevOps-Uninter/trabalhodevops.git
 cd trabalhodevops
 ```
-### 2. Criar Ambiente Virtual
+### 2. Configuração do ambiente
 
 ```bash
 python -m venv venv
 ```
 
-### 3. Ativar o Ambiente Virtual
+### 3. Executar o Projeto com Docker Compose
+Para construir as imagens e iniciar os serviços em segundo plano, execute o seguinte comando:
 
-- **Linux/macOS**:
+Bash
+
+docker-compose up -d --build
+A aplicação estará disponível em http://localhost:8000.
+
+### 4. Migrações de Banco de Dados
+
+Para aplicar as migrações, entre no contêiner da aplicação e rode o Alembic:
 
 ```bash
-source venv/bin/activate
+docker-compose exec <nome_do_servico_da_api> bash
+alembic upgrade head
 ```
 
-- **Windows**:
+## 🧪 Como Rodar os Testes
+
+Os testes automatizados estão na pasta tests/. Para executá-los, use o seguinte comando:
 
 ```bash
-.\venv\Scripts\activate
-```
-
-### 4. Instalar as Dependências
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 🧪 Rodando a Aplicação
-
-Após configurar o ambiente, execute o servidor de desenvolvimento:
-
-```bash
-uvicorn app.main:app --reload
+docker-compose exec <nome_do_servico_da_api> pytest
 ```
 
 A aplicação estará disponível nos seguintes endereços:
@@ -81,38 +83,42 @@ A aplicação estará disponível nos seguintes endereços:
 
 ---
 
-## 🗂️ Estrutura do Projeto (Prevista)
+## 🗂️ Estrutura do Projeto
 
 ```
-easyorder/
-├── .github/
-│   └── workflows/
-│       └── ci.yml
-├── app/
-│   ├── routers/
-│   │   ├── pedidos.py
-│   │   └── clientes.py
+├── alembic/                 # Configurações e versões de migrações do banco de dados
+├── app/                     # Código fonte da aplicação
+│   ├── routers/             # Rotas da API (pedidos, clientes, etc.)
 │   ├── crud.py
 │   ├── database.py
 │   ├── main.py
 │   ├── models.py
 │   └── schemas.py
+├── infra/
+│   └── terraform/         # Módulos para gerenciamento de infraestrutura
+├── tests/                 # Testes unitários e de integração
+├── .github/                 # Fluxos de trabalho do GitHub Actions para CI/CD
+├── .dockerignore
+├── .env.example
 ├── .gitignore
-├── README.md
+├── alembic.ini
+├── docker-compose.yml
+├── Dockerfile
+├── entrypoint.sh
 └── requirements.txt
 ```
-
----
 
 ## 👨‍🏫 Objetivo Acadêmico
 
 Este projeto é um trabalho prático da disciplina de **DevOps** e tem como foco principal:
 
 - Organização de repositório com Git e GitHub
-- Automatização de testes e integração contínua com GitHub Actions
-- Deploy automatizado em ambiente cloud (AWS)
-- Monitoramento e alertas com AWS CloudWatch
-- Aplicação de boas práticas DevOps de ponta a ponta no ciclo de vida do software
+- Automação de Testes e Integração Contínua (CI/CD): Implementação com GitHub Actions.
+- Infraestrutura como Código (IaC): Gerenciamento da infraestrutura com Terraform.
+- Orquestração de Aplicações: Uso de Docker e Docker Compose.
+- Deploy em Ambiente Cloud: Implantação automatizada na AWS.
+- Monitoramento e Alertas: Configuração com AWS CloudWatch.
+- Práticas DevOps: Aplicação de conceitos de ponta a ponta no ciclo de vida do software.
 
 # Integrantes do Grupo
 
@@ -142,11 +148,11 @@ Este projeto é um trabalho prático da disciplina de **DevOps** e tem como foco
 
 - **Eliseu de Lima Andrade**  
   - RU: 4709242  
-  - GitHub: [eliseulima5] (https://github.com/eliseulima5) 
+  - GitHub: [eliseulima5](https://github.com/eliseulima5) 
 
 - **Jamile Santana da Silva**  
   - RU: 4773362  
-  - GitHub: [Jhamyllie] (https://github.com/Jhamyllie)
+  - GitHub: [Jhamyllie](https://github.com/Jhamyllie)
  
 -  **LUCAS SILVA**  
   - RU: 4693460  
