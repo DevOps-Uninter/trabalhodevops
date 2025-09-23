@@ -132,7 +132,7 @@ Este projeto é um trabalho prático da disciplina de **DevOps** e tem como foco
 
 - **Cleberton Gonçalves da Silva**  
   - RU: 4710627  
-  - GitHub: *(não informado)*
+  - GitHub: ([Meowkay92](https://github.com/Meowkay92)
 
 - **Lucas Silva**  
   - RU: 4702132  
