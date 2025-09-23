@@ -157,6 +157,13 @@ Este projeto é um trabalho prático da disciplina de **DevOps** e tem como foco
 - **Lucas Silva**  
   - RU: 4693460  
   - GitHub: [luc4s-jpg](https://github.com/luc4s-jpg)
+
+   **Gabriel Correa da Silva**  
+  - RU: 4709634  
+  - GitHub: [GabrielCorrea197](https://github.com/GabrielCorrea197)
+
+  **Diemeson Conceição**  
+  - RU: 4836302
  
   ### Prints
 ![WhatsApp Image 2025-09-22 at 21 24 39 (1)](https://github.com/user-attachments/assets/bed8a7eb-4445-4468-8e5f-665b6a3955a4)
