@@ -123,11 +123,11 @@ Este projeto é um trabalho prático da disciplina de **DevOps** e tem como foco
 # Integrantes do Grupo
 
 - **Weden Gabriel da Silva Gomes**  
-  - RU: 4170826  
+  - RU: 4170826
   - GitHub: [wedengabriel](https://github.com/wedengabriel)
 
 - **Desyree N Garcia Batista**  
-  - RU: 986134  
+  - RU: 986134
   - GitHub: [desyreegarcia](https://github.com/desyreegarcia)
 
 - **Cleberton Gonçalves da Silva**  
@@ -154,6 +154,10 @@ Este projeto é um trabalho prático da disciplina de **DevOps** e tem como foco
   - RU: 4773362  
   - GitHub: [Jhamyllie](https://github.com/Jhamyllie)
  
--  **LUCAS SILVA**  
+- **Lucas Silva**  
   - RU: 4693460  
-  - GitHub: [luc4s-jpg] .(https://github.com/luc4s-jpg).
+  - GitHub: [luc4s-jpg](https://github.com/luc4s-jpg)
+ 
+  ### Prints
+![WhatsApp Image 2025-09-22 at 21 24 39 (1)](https://github.com/user-attachments/assets/bed8a7eb-4445-4468-8e5f-665b6a3955a4)
+![WhatsApp Image 2025-09-22 at 20 17 42 (1)](https://github.com/user-attachments/assets/ac3e68c5-54f1-41da-9bd6-6aef39fb4180)
