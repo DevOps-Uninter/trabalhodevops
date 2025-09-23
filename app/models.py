@@ -31,6 +31,7 @@ class Pedido(Base):
     id = Column(Integer, primary_key=True, index=True)
     descricao = Column(String(255), index=True, nullable=False)
     cliente_id = Column(Integer, ForeignKey("clientes.id"), nullable=False)
+    valor_total = Column(Numeric(10, 2), nullable=False, default=0.0)
 
     cliente = relationship("Cliente", back_populates="pedidos")
     pagamentos = relationship(
